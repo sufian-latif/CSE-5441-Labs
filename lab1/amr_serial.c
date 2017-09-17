@@ -14,6 +14,7 @@ double AFFECT_RATE;
 double EPSILON;
 int nBox;
 Box *boxes;
+double maxTemp, minTemp;
 
 char *testInput[] = {
         "testgrid_1",
@@ -28,9 +29,26 @@ char *testInput[] = {
 int main(int argc, char **argv) {
     sscanf(argv[1], "%lf", &AFFECT_RATE);
     sscanf(argv[2], "%lf", &EPSILON);
-    freopen(testInput[0], "r", stdin);
+    freopen(testInput[6], "r", stdin);
     readInput();
-    updateAllNeighborInfo();
+
+    int i, j;
+    for (i = 0; i < nBox; i++) {
+        updateNeighborInfo(&boxes[i]);
+    }
+
+    for (i = 0; checkConvergence() == 0; i++) {
+        for (j = 0; j < nBox; j++) {
+            calcNewTemp(&boxes[j]);
+        }
+
+        for (j = 0; j < nBox; j++) {
+            boxes[j].temp = boxes[j].newTemp;
+        }
+    }
+
+    printf("Converged after %d iterations\n", i);
+    printf("max DSV = %lf and min DSV = %lf\n", maxTemp, minTemp);
 
     return 0;
 }
@@ -50,7 +68,7 @@ void readInput() {
 void readBoxInfo(Box *box) {
     scanf("%d", &box->id);
     scanf("%d %d %d %d", &box->upperLeftY, &box->upperLeftX, &box->height, &box->width);
-    box->nonSharedEdgeLength = 2 * (box->height + box->width);
+    box->perimeter = 2 * (box->height + box->width);
 
     int i, j;
 
@@ -64,14 +82,6 @@ void readBoxInfo(Box *box) {
     }
 
     scanf("%lf", &box->temp);
-}
-
-void updateAllNeighborInfo() {
-    int i;
-
-    for (i = 0; i < nBox; i++) {
-        updateNeighborInfo(&boxes[i]);
-    }
 }
 
 void updateNeighborInfo(Box *box) {
@@ -107,3 +117,33 @@ void updateNeighborInfo(Box *box) {
     }
 }
 
+void calcNewTemp(Box *box) {
+    int i;
+    double waat = box->temp * box->nonSharedEdgeLength;
+
+    for (i = 0; i < box->nTotalNeighbors; i++) {
+        waat += box->allNeighbors[i].sharedEdgeLength * boxes[box->allNeighbors[i].id].temp;
+    }
+
+    waat /= box->perimeter;
+
+    box->newTemp = box->temp + (waat - box->temp) * AFFECT_RATE;
+}
+
+int checkConvergence() {
+    int i;
+
+    maxTemp = minTemp = boxes[0].temp;
+
+    for (i = 1; i < nBox; i++) {
+        if (boxes[i].temp > maxTemp) {
+            maxTemp = boxes[i].temp;
+        }
+
+        if (boxes[i].temp < minTemp) {
+            minTemp = boxes[i].temp;
+        }
+    }
+
+    return maxTemp - minTemp > maxTemp * EPSILON ? 0 : 1;
+}

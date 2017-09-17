@@ -27,6 +27,7 @@ typedef struct {
     int nTotalNeighbors;
     Neighbor *allNeighbors;
     int nonSharedEdgeLength;
+    int perimeter;
 } Box;
 
 extern int nBox;
@@ -34,6 +35,8 @@ extern Box *boxes;
 
 void readInput();
 void readBoxInfo(Box *box);
-void updateAllNeighborInfo();
 void updateNeighborInfo(Box *box);
+void calcNewTemp(Box *box);
+int checkConvergence();
+
 #endif //AMR_SERIAL_H

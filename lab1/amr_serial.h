@@ -29,9 +29,11 @@ typedef struct {
     int nonSharedEdgeLength;
 } Box;
 
+extern int nBox;
 extern Box *boxes;
 
 void readInput();
 void readBoxInfo(Box *box);
-
+void updateAllNeighborInfo();
+void updateNeighborInfo(Box *box);
 #endif //AMR_SERIAL_H

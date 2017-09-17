@@ -5,6 +5,7 @@
 #include "amr_serial.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #define max(x, y) ((x) > (y) ? (x) : (y))
 #define min(x, y) ((x) < (y) ? (x) : (y))
@@ -37,6 +38,11 @@ int main(int argc, char **argv) {
         updateNeighborInfo(&boxes[i]);
     }
 
+//    struct timespec start, end;
+//    double diff;
+
+//    clock_gettime(CLOCK_REALTIME, &start);
+
     for (i = 0; checkConvergence() == 0; i++) {
         for (j = 0; j < nBox; j++) {
             calcNewTemp(&boxes[j]);
@@ -46,9 +52,14 @@ int main(int argc, char **argv) {
             boxes[j].temp = boxes[j].newTemp;
         }
     }
+//    clock_gettime(CLOCK_REALTIME, &end);
+//    diff = (double)(((end.tv_sec - start.tv_sec) * CLOCKS_PER_SEC) + ((end.tv_nsec - start.tv_nsec) / NS_PER_US));
 
     printf("Converged after %d iterations\n", i);
     printf("max DSV = %lf and min DSV = %lf\n", maxTemp, minTemp);
+//    printf("time: %lf\n", diff);
+
+    cleanup();
 
     return 0;
 }
@@ -146,4 +157,18 @@ int checkConvergence() {
     }
 
     return maxTemp - minTemp > maxTemp * EPSILON ? 0 : 1;
+}
+
+void cleanup() {
+    int i, j;
+
+    for (i = 0; i < nBox; i++) {
+        for (j = 0; j < 4; j++) {
+            free(boxes[i].neighbors);
+        }
+
+        free(boxes[i].allNeighbors);
+    }
+
+    free(boxes);
 }

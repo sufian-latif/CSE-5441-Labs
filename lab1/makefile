@@ -1,7 +1,7 @@
 OBJS = amr_serial.o
 GCC = gcc
 DEBUG = -g
-CFLAGS = -Wall -c -O3 $(DEBUG)
+CFLAGS = -Wall -c -l -r -t -O3 $(DEBUG)
 LFLAGS = -Wall $(DEBUG)
 
 all : $(OBJS)

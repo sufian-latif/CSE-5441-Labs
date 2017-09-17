@@ -38,5 +38,6 @@ void readBoxInfo(Box *box);
 void updateNeighborInfo(Box *box);
 void calcNewTemp(Box *box);
 int checkConvergence();
+void cleanup();
 
 #endif //AMR_SERIAL_H

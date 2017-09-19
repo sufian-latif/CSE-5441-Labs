@@ -10,6 +10,7 @@
 #define max(x, y) ((x) > (y) ? (x) : (y))
 #define min(x, y) ((x) < (y) ? (x) : (y))
 #define abs(x) (x < 0 ? -(x) : x)
+#define NS_PER_US 1000
 
 double AFFECT_RATE;
 double EPSILON;
@@ -17,20 +18,20 @@ int nBox;
 Box *boxes;
 double maxTemp, minTemp;
 
-char *testInput[] = {
-        "testgrid_1",
-        "testgrid_2",
-        "testgrid_50_78",
-        "testgrid_50_201",
-        "testgrid_200_1166",
-        "testgrid_400_1636",
-        "testgrid_400_12206"
-};
+//char *testInput[] = {
+//        "testgrid_1",
+//        "testgrid_2",
+//        "testgrid_50_78",
+//        "testgrid_50_201",
+//        "testgrid_200_1166",
+//        "testgrid_400_1636",
+//        "testgrid_400_12206"
+//};
 
 int main(int argc, char **argv) {
     sscanf(argv[1], "%lf", &AFFECT_RATE);
     sscanf(argv[2], "%lf", &EPSILON);
-    freopen(testInput[6], "r", stdin);
+//    freopen(testInput[1], "r", stdin);
     readInput();
 
     int i, j;
@@ -38,10 +39,13 @@ int main(int argc, char **argv) {
         updateNeighborInfo(&boxes[i]);
     }
 
-//    struct timespec start, end;
-//    double diff;
+    struct timespec chronoStart, chronoEnd;
+    clock_t clockStart, clockEnd;
+    time_t timeStart, timeEnd;
 
-//    clock_gettime(CLOCK_REALTIME, &start);
+    clockStart = clock();
+    time(&timeStart);
+    clock_gettime(CLOCK_REALTIME, &chronoStart);
 
     for (i = 0; checkConvergence() == 0; i++) {
         for (j = 0; j < nBox; j++) {
@@ -52,12 +56,24 @@ int main(int argc, char **argv) {
             boxes[j].temp = boxes[j].newTemp;
         }
     }
-//    clock_gettime(CLOCK_REALTIME, &end);
-//    diff = (double)(((end.tv_sec - start.tv_sec) * CLOCKS_PER_SEC) + ((end.tv_nsec - start.tv_nsec) / NS_PER_US));
 
-    printf("Converged after %d iterations\n", i);
-    printf("max DSV = %lf and min DSV = %lf\n", maxTemp, minTemp);
-//    printf("time: %lf\n", diff);
+    clockEnd = clock();
+    time(&timeEnd);
+    clock_gettime(CLOCK_REALTIME, &chronoEnd);
+
+    int clockDiff = clockEnd - clockStart;
+    int timeDiff = timeEnd - timeStart;
+    double chronoDiff = (double)(((chronoEnd.tv_sec - chronoStart.tv_sec) * CLOCKS_PER_SEC)
+                          + ((chronoEnd.tv_nsec - chronoStart.tv_nsec) / NS_PER_US));
+
+    printf("\n**************************************************************************\n");
+    printf("dissipation converged in %d iterations,\n", i);
+    printf("    with max DSV = %.7lf and min DSV = %.7lf\n", maxTemp, minTemp);
+    printf("    affect rate  = %lf; epsilon = %lf\n\n", AFFECT_RATE, EPSILON);
+    printf("elapsed convergence loop time  (clock): %d\n", clockDiff);
+    printf("elapsed convergence loop time   (time): %d\n", timeDiff);
+    printf("elapsed convergence loop time (chrono): %lf\n", chronoDiff);
+    printf("\n**************************************************************************\n");
 
     cleanup();
 
@@ -164,7 +180,7 @@ void cleanup() {
 
     for (i = 0; i < nBox; i++) {
         for (j = 0; j < 4; j++) {
-            free(boxes[i].neighbors);
+            free(boxes[i].neighbors[j]);
         }
 
         free(boxes[i].allNeighbors);

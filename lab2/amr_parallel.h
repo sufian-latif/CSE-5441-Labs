@@ -27,6 +27,13 @@ typedef struct {
     int perimeter;
 } Box;
 
+typedef struct {
+    int tid;
+    int start;
+    int nBox;
+    double *newTemp;
+} ThreadParams;
+
 extern int nBox;
 extern Box *boxes;
 

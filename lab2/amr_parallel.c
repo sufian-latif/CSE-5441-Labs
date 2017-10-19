@@ -33,7 +33,8 @@ char *testInput[] = {
 int main(int argc, char **argv) {
     sscanf(argv[1], "%lf", &AFFECT_RATE);
     sscanf(argv[2], "%lf", &EPSILON);
-    freopen(testInput[7], "r", stdin);
+    sscanf(argv[3], "%d", &N_THREADS);
+    freopen(testInput[1], "r", stdin);
     readInput();
 
     int i, j;
@@ -64,6 +65,7 @@ int main(int argc, char **argv) {
     printf("dissipation converged in %d iterations,\n", iter);
     printf("    with max DSV = %.7lf and min DSV = %.7lf\n", maxTemp, minTemp);
     printf("    affect rate  = %lf; epsilon = %lf\n", AFFECT_RATE, EPSILON);
+    printf("    number of threads used = %d\n\n", N_THREADS);
     printf("elapsed convergence loop time  (clock): %d\n", clockDiff);
     printf("elapsed convergence loop time   (time): %d\n", timeDiff);
     printf("elapsed convergence loop time (chrono): %lf\n", chronoDiff);

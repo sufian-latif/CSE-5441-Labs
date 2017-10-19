@@ -1,9 +1,12 @@
 GCC = gcc
 FLAGS = -O3
-LIBS = -lrt
+LIBS = -lrt -pthread
 
-all :
-	$(GCC) $(FLAGS) $(LIBS) amr_parallel.c
+serial:
+	$(GCC) $(FLAGS) $(LIBS) serial.c amr_parallel.c
+
+disposable:
+	$(GCC) $(FLAGS) $(LIBS) disposable.c amr_parallel.c
 
 clean:
-	rm *.o *.out
+	-rm *.o *.out

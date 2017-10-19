@@ -7,7 +7,7 @@
 
 extern double AFFECT_RATE;
 extern double EPSILON;
-extern double N_THREADS;
+extern int N_THREADS;
 
 typedef struct {
     int id;
@@ -29,23 +29,13 @@ typedef struct {
 
 extern int nBox;
 extern Box *boxes;
-extern double *newTemp;
 
+int runConvergenceLoop();
 void readInput();
 void readBoxInfo(Box *box);
 void updateNeighborInfo(int n);
-void calcNewTemp(int n);
+double calcNewTemp(int n);
 int checkConvergence();
 void cleanup();
-
-char *testInput[] = {
-        "testgrid_1",
-        "testgrid_2",
-        "testgrid_50_78",
-        "testgrid_50_201",
-        "testgrid_200_1166",
-        "testgrid_400_1636",
-        "testgrid_400_12206"
-};
 
 #endif //AMR_PARALLEL_H

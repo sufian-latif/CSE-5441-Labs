@@ -28,10 +28,9 @@ typedef struct {
 } Box;
 
 typedef struct {
-    int tid;
     int start;
     int nBox;
-    double *newTemp;
+    double *target;
 } ThreadParams;
 
 extern int nBox;

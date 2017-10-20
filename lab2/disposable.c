@@ -4,14 +4,13 @@
 
 #include "amr_parallel.h"
 #include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 void *threadFunc(void *param) {
     int i;
     ThreadParams tp = *(ThreadParams *) param;
+
     for (i = 0; i < tp.nBox; i++) {
-        tp.newTemp[i] = calcNewTemp(tp.start + i);
+        tp.target[tp.start + i] = calcNewTemp(tp.start + i);
     }
 
     return NULL;
@@ -28,10 +27,9 @@ int runConvergenceLoop() {
         int start = 0;
 
         for (th = 0; th < N_THREADS; th++) {
-            tp[th].tid = th;
             tp[th].start = start;
             tp[th].nBox = nBox / N_THREADS + (th < nBox % N_THREADS ? 1 : 0);
-            tp[th].newTemp = (double *) malloc(tp[th].nBox * sizeof(double));
+            tp[th].target = newTemp;
 
             start += tp[th].nBox;
 
@@ -42,11 +40,8 @@ int runConvergenceLoop() {
             pthread_join(threads[th], &th_status);
         }
 
-        for(th = 0; th < N_THREADS; th++) {
-            for (i = 0; i < tp[th].nBox; i++) {
-                boxes[tp[th].start + i].temp = tp[th].newTemp[i];
-            }
-            free(tp[th].newTemp);
+        for (i = 0; i < nBox; i++) {
+            boxes[i].temp = newTemp[i];
         }
     }
 
